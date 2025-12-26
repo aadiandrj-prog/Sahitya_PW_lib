@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Poetry Wing</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;500&family=Special+Elite&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>The Poetry Wing</h1>
+        <p>A space for our words to breathe.</p>
+        <button id="open-submit-btn">Submit a Poem</button>
+    </header>
+
+    <main id="library-container">
+        </main>
+
+    <div id="modal-overlay" class="hidden">
+        <div class="modal-content">
+            <h2>Share your work</h2>
+            
+            <form id="poem-form">
+                <input type="text" id="author" placeholder="Your Name (or Alias)" required>
+                <input type="text" id="title" placeholder="Poem Title" required>
+                
+                <textarea id="poem-body" rows="10" placeholder="Type your poem here..." required></textarea>
+                
+                <label for="font-choice">Choose a Mood:</label>
+                <select id="font-choice">
+                    <option value="font-serif">Classic (Serif)</option>
+                    <option value="font-sans">Modern (Sans-Serif)</option>
+                    <option value="font-mono">Raw (Typewriter)</option>
+                </select>
+
+                <label for="image-file" class="file-label">
+                    <span>📷 Add Background Image (Optional)</span>
+                    <input type="file" id="image-file" accept="image/*">
+                </label>
+
+                <label for="audio-file" class="file-label">
+                    <span>🎙️ Add Voice Recording (Optional)</span>
+                    <input type="file" id="audio-file" accept="audio/*">
+                </label>
+
+                <div class="form-buttons">
+                    <button type="button" id="close-btn">Cancel</button>
+                    <button type="submit">Publish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

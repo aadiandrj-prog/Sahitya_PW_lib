@@ -3,54 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Poetry Wing</title>
+    <title>Sahitya PW Archive</title>
     <link rel="stylesheet" href="style.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;500&family=Special+Elite&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
 <body>
+    <div class="edge-blur-vignette"></div>
+    <button id="theme-toggle" title="Toggle Dark Mode">🌙</button>
 
-    <header>
-        <h1>The Poetry Wing</h1>
-        <p>A space for our words to breathe.</p>
+    <header id="main-header"></header>
+
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="🔍 Search by title, author, or line...">
+        </div>
         <button id="open-submit-btn">Submit a Poem</button>
-    </header>
+    </div>
 
-    <main id="library-container">
-        </main>
+    <div id="layout-wrapper">
+        <aside id="sidebar">
+            <h3>Archive</h3>
+            <ul id="month-list"></ul>
+            <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--sidebar-border);">
+            <h3>Menu</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#footer-about">About Us</a></li>
+                <li><a href="#footer-contact">Contact Us</a></li>
+                <li><a href="#footer-report">Report Issue</a></li>
+            </ul>
+        </aside>
+
+        <main id="main-content"></main>
+    </div>
+
+    <footer id="site-footer">
+        <div class="footer-column" id="footer-about">
+            <h4>About Us</h4>
+            <p>Made in an attempt to preserve the literary works of our community. This is the archive of Sahitya, Poetry Wing.</p>
+        </div>
+        <div class="footer-column" id="footer-contact">
+            <h4>Contact Us</h4>
+            <p>Admin's email: aadiandrj@gmail.com</p>
+            <p>Soc's Insta: @sahitya_dtu</p>
+        </div>
+        <div class="footer-column" id="footer-report">
+            <h4>Report Something</h4>
+            <p>Found a bug or inappropriate content?</p>
+            <a href="mailto:aadiandrj@gmail.com" style="color: #aaa; text-decoration: underline;">Let us know</a>
+        </div>
+    </footer>
 
     <div id="modal-overlay" class="hidden">
         <div class="modal-content">
             <h2>Share your work</h2>
-            
             <form id="poem-form">
                 <input type="text" id="author" placeholder="Your Name (or Alias)" required>
                 <input type="text" id="title" placeholder="Poem Title" required>
-                
                 <textarea id="poem-body" rows="10" placeholder="Type your poem here..." required></textarea>
-                
-                <label for="font-choice">Choose a Mood:</label>
-                <select id="font-choice">
-                    <option value="font-serif">Classic (Serif)</option>
-                    <option value="font-sans">Modern (Sans-Serif)</option>
-                    <option value="font-mono">Raw (Typewriter)</option>
-                </select>
-
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>When did you write this?</label>
+                        <div class="date-selectors">
+                            <select id="date-month" required>
+                                <option value="" disabled selected>Month</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                            <select id="date-year" required>
+                                <option value="" disabled selected>Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="font-choice">Choose a Mood:</label>
+                        <select id="font-choice">
+                            <option value="font-serif">Classic (Serif)</option>
+                            <option value="font-sans">Modern (Sans-Serif)</option>
+                            <option value="font-mono">Raw (Typewriter)</option>
+                        </select>
+                    </div>
+                </div>
                 <label for="image-file" class="file-label">
-                    <span>📷 Add Background Image (Optional)</span>
+                    <span id="image-label-text">📷 Add Background Image (Optional)</span>
                     <input type="file" id="image-file" accept="image/*">
                 </label>
-
                 <label for="audio-file" class="file-label">
-                    <span>🎙️ Add Voice Recording (Optional)</span>
+                    <span id="audio-label-text">🎙️ Add Voice Recording (Optional)</span>
                     <input type="file" id="audio-file" accept="audio/*">
                 </label>
-
                 <div class="form-buttons">
-                    <button type="button" id="close-btn">Cancel</button>
-                    <button type="submit">Publish</button>
+                    <button type="button" id="close-btn" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Publish</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="reader-overlay" class="hidden">
+        <button id="close-reader-btn" class="floating-close" title="Close">✕</button>
+        
+        <div class="reader-content">
+            <div class="reader-bg-layer"></div>
+
+            <div id="reader-scroll-wrapper">
+                <div id="reader-date" class="reader-meta"></div>
+                <h1 id="reader-title"></h1>
+                <div id="reader-author" class="reader-meta"></div>
+                
+                <div id="reader-audio-container"></div>
+                <div id="reader-body" class="poem-text"></div>
+                
+                <div class="reader-footer">
+                    <p class="section-label">React to this piece:</p>
+                    <div id="reaction-zone" class="reaction-zone"></div>
+    
+                    <div class="reaction-wrapper">
+                        <button id="add-reaction-btn" class="add-reaction-btn">+ Add Emoji</button>
+                        <div id="emoji-popover" class="hidden">
+                            <emoji-picker></emoji-picker>
+                        </div>
+                    </div>
+                    
+                    <div class="comment-section">
+                        <textarea id="comment-input" placeholder="Leave an anonymous comment...."></textarea>
+                        <button id="post-comment-btn" class="btn-submit small-btn">Post</button>
+                    </div>
+                    <div id="comments-list"></div>
+                </div>
+            </div>
         </div>
     </div>
 

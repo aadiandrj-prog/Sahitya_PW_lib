@@ -39,6 +39,7 @@ export default function Home() {
     let cursorY = 0;
     let mouseX = 0;
     let mouseY = 0;
+    let animationFrameId: number;
 
     const animateCursor = () => {
       const cursor = document.getElementById("custom-cursor");
@@ -49,7 +50,7 @@ export default function Home() {
         cursorY += dy * 0.2;
         cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
       }
-      requestAnimationFrame(animateCursor);
+      animationFrameId = requestAnimationFrame(animateCursor);
     };
 
     const handleMouseUpdate = (e: MouseEvent) => {
@@ -72,72 +73,19 @@ export default function Home() {
     document.addEventListener("mouseenter", handleMouseEnter);
     document.addEventListener("mouseleave", handleMouseLeave);
 
-    animateCursor();
+    animationFrameId = requestAnimationFrame(animateCursor);
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mousemove", handleMouseUpdate);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
     <>
-      {/* Navigation */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl rounded-full border border-white/60 bg-white/40 dark:bg-surface-dim/40 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] z-50 flex justify-between items-center py-3 px-6">
-        <a
-          className="font-display-xl text-headline-md tracking-tighter text-primary dark:text-primary-fixed-dim flex items-center gap-2"
-          href="#"
-        >
-          <svg
-            className="h-8 w-8"
-            fill="none"
-            height="32"
-            viewBox="0 0 32 32"
-            width="32"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="16" cy="16" r="15" stroke="black" strokeWidth="2"></circle>
-            <path
-              d="M11 10V22M21 10V22M11 16H21"
-              stroke="black"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-            ></path>
-          </svg>
-        </a>
-        <div className="hidden md:flex items-center gap-6">
-          <a
-            className="text-primary font-bold font-body-md text-body-md scale-95 active:scale-90 transition-transform"
-            href="#"
-          >
-            Archive
-          </a>
-          <a
-            className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-body-md text-body-md scale-95 active:scale-90 transition-transform"
-            href="#"
-          >
-            Community
-          </a>
-          <a
-            className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-body-md text-body-md scale-95 active:scale-90 transition-transform"
-            href="#"
-          >
-            About Us
-          </a>
-        </div>
-        <div className="flex items-center gap-4">
-          <a
-            className="bg-white/40 text-on-surface border border-white/60 shadow-sm backdrop-blur-md font-body-md text-body-md font-medium px-6 py-2 rounded-full hover:bg-white/60 transition-colors duration-300 scale-95 active:scale-90 transition-transform"
-            href="#"
-          >
-            Login / Signup
-          </a>
-        </div>
-      </nav>
-
       <main className="max-w-[1728px] mx-auto w-full">
         {/* Section 1: Hero */}
         <section className="relative pt-48 pb-section-gap px-container-padding min-h-[90vh] flex flex-col items-center justify-center text-center overflow-hidden cursor-reactive-container">

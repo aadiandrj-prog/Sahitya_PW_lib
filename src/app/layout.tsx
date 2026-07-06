@@ -1,9 +1,21 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Cormorant_Garamond, Special_Elite } from "next/font/google";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  weight: ["400", "600"],
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+});
+
+const specialElite = Special_Elite({
+  weight: "400",
+  variable: "--font-special-elite",
   subsets: ["latin"],
 });
 
@@ -21,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`light ${plusJakartaSans.variable}`}>
+    <html lang="en" className={`light ${plusJakartaSans.variable} ${cormorantGaramond.variable} ${specialElite.variable}`}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

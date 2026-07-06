@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getPoems } from "@/lib/firebase/db";
+import { Poem } from "@/types";
 
 export default function Home() {
   useEffect(() => {
@@ -84,6 +87,31 @@ export default function Home() {
     };
   }, []);
 
+  const [poems, setPoems] = useState<Poem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchPoems = async () => {
+      try {
+        const data = await getPoems();
+        setPoems(data);
+      } catch (error) {
+        console.error("Error fetching poems:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPoems();
+  }, []);
+
+  const filteredPoems = poems.filter(
+    (poem) =>
+      poem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      poem.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      poem.body.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <main className="max-w-[1728px] mx-auto w-full">
@@ -109,6 +137,8 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               <input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-transparent border-none resize-none font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:ring-0 min-h-[40px] outline-none"
                 placeholder="🔍 Search by title, author, or line..."
               />
@@ -123,12 +153,82 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <button className="bg-white/30 text-on-surface border border-white/50 shadow-sm rounded-full px-5 py-2 font-body-md text-body-md hover:bg-white/50 transition-colors backdrop-blur-md">
+            <Link href="/submit" className="bg-white/30 text-on-surface border border-white/50 shadow-sm rounded-full px-5 py-2 font-body-md text-body-md hover:bg-white/50 transition-colors backdrop-blur-md">
               Submit a Poem
-            </button>
-            <button className="bg-white/30 text-on-surface border border-white/50 shadow-sm rounded-full px-5 py-2 font-body-md text-body-md hover:bg-white/50 transition-colors backdrop-blur-md">
-              Browse by Month
-            </button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Archive Feed */}
+        <section className="py-12 px-container-padding bg-surface/50 relative min-h-[500px]">
+          <div className="max-w-[1515px] mx-auto">
+            <div className="flex items-center justify-between mb-10">
+               <h2 className="font-display-xl text-4xl text-on-surface">The Archive</h2>
+               <div className="text-on-surface-variant font-medium">{filteredPoems.length} works</div>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-20 text-on-surface-variant font-body-lg">
+                <span className="material-symbols-outlined animate-spin text-4xl mb-4 block">sync</span>
+                Loading the archive...
+              </div>
+            ) : filteredPoems.length === 0 ? (
+               <div className="text-center py-20 text-on-surface-variant font-body-lg">
+                  No poems found. Try a different search!
+               </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredPoems.map((poem) => {
+                  // The legacy fonts used font-serif, font-sans, font-mono.
+                  // Because Tailwind classes might conflict or need to be exact mapped,
+                  // we will construct the class based on the saved string.
+                  const fontClass = poem.font === 'font-serif' ? 'font-serif' :
+                                    poem.font === 'font-mono' ? 'font-mono' : 'font-sans';
+
+                  return (
+                    <Link href={`/poem/${poem.id}`} key={poem.id} className="group relative">
+                      <div className="h-full bg-white/40 backdrop-blur-xl rounded-2xl border border-white/60 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1">
+                        {/* If image exists, add a subtle background layer */}
+                        {poem.imageUrl && (
+                          <div
+                            className="absolute inset-0 z-0 opacity-10 bg-cover bg-center group-hover:opacity-20 transition-opacity duration-500"
+                            style={{ backgroundImage: `url(${poem.imageUrl})` }}
+                          />
+                        )}
+
+                        <div className="relative z-10 p-8 h-full flex flex-col">
+                          <h3 className={`text-2xl font-bold text-on-surface mb-2 line-clamp-2 ${fontClass}`}>
+                            {poem.title}
+                          </h3>
+                          <div className="text-sm font-medium text-primary mb-6 pb-4 border-b border-white/40">
+                            by {poem.author}
+                          </div>
+                          <p className={`text-on-surface-variant leading-relaxed line-clamp-5 flex-grow ${fontClass} whitespace-pre-wrap`}>
+                            {poem.body}
+                          </p>
+
+                          <div className="mt-6 pt-4 flex items-center justify-between text-xs font-semibold text-on-surface/50 uppercase tracking-wider border-t border-white/20">
+                            <span>
+                                {poem.createdAt?.toDate ? poem.createdAt.toDate().toLocaleDateString('default', { month: 'long', year: 'numeric' }) : "Unknown Date"}
+                            </span>
+                            <div className="flex items-center gap-4">
+                                {poem.audioUrl && <span className="material-symbols-outlined text-[16px]" title="Contains Audio">mic</span>}
+                                {poem.imageUrl && <span className="material-symbols-outlined text-[16px]" title="Contains Image">image</span>}
+                                {Object.keys(poem.reactions || {}).length > 0 && (
+                                   <div className="flex items-center gap-1">
+                                      <span className="material-symbols-outlined text-[16px]">favorite</span>
+                                      {Object.values(poem.reactions).reduce((a,b)=>a+b, 0)}
+                                   </div>
+                                )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
 

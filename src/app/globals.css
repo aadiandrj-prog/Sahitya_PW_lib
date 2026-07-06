@@ -66,6 +66,9 @@
   --font-headline-md: var(--font-plus-jakarta), sans-serif;
   --font-display-xl: var(--font-plus-jakarta), sans-serif;
   --font-body-md: var(--font-plus-jakarta), sans-serif;
+  --font-serif: var(--font-cormorant), serif;
+  --font-sans: var(--font-plus-jakarta), sans-serif;
+  --font-mono: var(--font-special-elite), monospace;
 
   --text-label-caps: 12px;
   --text-label-caps-line-height: 1;

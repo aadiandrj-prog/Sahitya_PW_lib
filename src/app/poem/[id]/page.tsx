@@ -25,17 +25,20 @@ export default function PoemReader({ params }: { params: Promise<{ id: string }>
     // We use a listener for real-time reactions and comments
     const unsub = onSnapshot(doc(db, "poems", id), (docSnap) => {
       if (docSnap.exists()) {
-        setPoem({ id: docSnap.id, ...docSnap.data() } as Poem);
+        const data = docSnap.data() as Omit<Poem, "id">;
+        setPoem({ ...data, id: docSnap.id });
 
-        // Restore local reaction if user is not auth-bound (for legacy compat)
-        // or if they are, you could store it in a user profile.
-        // For simplicity, sticking to local storage mapping like the legacy app.
-        setUserReaction(localStorage.getItem(`reaction_poem_${id}`));
+        // Prioritize DB user reaction if available, else fall back to local storage
+        if (user && data.userReactions && data.userReactions[user.uid]) {
+            setUserReaction(data.userReactions[user.uid]);
+        } else {
+            setUserReaction(localStorage.getItem(`reaction_poem_${id}`));
+        }
       }
       setLoading(false);
     });
     return () => unsub();
-  }, [id]);
+  }, [id, user]);
 
   const handleReaction = async (emojiObj: any) => {
     if (!user) {
@@ -46,7 +49,7 @@ export default function PoemReader({ params }: { params: Promise<{ id: string }>
     setShowEmojiPicker(false);
 
     try {
-        const newReaction = await toggleReaction(id, emoji, userReaction);
+        const newReaction = await toggleReaction(id, emoji, userReaction, user.uid);
         if (newReaction) {
             localStorage.setItem(`reaction_poem_${id}`, newReaction);
             setUserReaction(newReaction);
@@ -65,7 +68,7 @@ export default function PoemReader({ params }: { params: Promise<{ id: string }>
           return;
       }
       try {
-        const newReaction = await toggleReaction(id, emoji, userReaction);
+        const newReaction = await toggleReaction(id, emoji, userReaction, user.uid);
         if (newReaction) {
             localStorage.setItem(`reaction_poem_${id}`, newReaction);
             setUserReaction(newReaction);
@@ -85,7 +88,7 @@ export default function PoemReader({ params }: { params: Promise<{ id: string }>
         return;
     }
     try {
-      await postComment(id, commentText);
+      await postComment(id, commentText, user.displayName || "Anonymous", user.uid);
       setCommentText("");
     } catch (error) {
       console.error("Error posting comment:", error);

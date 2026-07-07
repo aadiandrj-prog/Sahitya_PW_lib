@@ -160,6 +160,25 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  #custom-cursor {
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.1s ease-out;
+      transform: translate(-50%, -50%);
+      display: none;
+  }
+  @media (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+  }
 }
 
 @keyframes gradient-shift {

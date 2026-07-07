@@ -90,6 +90,7 @@ export default function Home() {
   const [poems, setPoems] = useState<Poem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
     const fetchPoems = async () => {
@@ -105,12 +106,25 @@ export default function Home() {
     fetchPoems();
   }, []);
 
-  const filteredPoems = poems.filter(
-    (poem) =>
-      poem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      poem.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      poem.body.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPoems = poems
+    .filter(
+      (poem) =>
+        poem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        poem.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        poem.body.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === "newest") {
+        return b.createdAt.toMillis() - a.createdAt.toMillis();
+      } else if (sortBy === "oldest") {
+        return a.createdAt.toMillis() - b.createdAt.toMillis();
+      } else if (sortBy === "mostLiked") {
+        const aReactions = Object.values(a.reactions || {}).reduce((acc, val) => acc + val, 0);
+        const bReactions = Object.values(b.reactions || {}).reduce((acc, val) => acc + val, 0);
+        return bReactions - aReactions;
+      }
+      return 0;
+    });
 
   return (
     <>
@@ -142,13 +156,19 @@ export default function Home() {
                 className="w-full bg-transparent border-none resize-none font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:ring-0 min-h-[40px] outline-none"
                 placeholder="🔍 Search by title, author, or line..."
               />
-              <div className="flex items-center justify-between pt-4 border-t border-white/40">
-                 <div className="flex items-center gap-3">
-                   <span className="font-body-md text-body-md text-on-surface-variant">Find the perfect poem</span>
+              <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-white/40 gap-4">
+                 <div className="flex items-center gap-3 w-full sm:w-auto">
+                   <span className="font-body-md text-body-md text-on-surface-variant whitespace-nowrap">Sort by:</span>
+                   <select
+                     value={sortBy}
+                     onChange={(e) => setSortBy(e.target.value)}
+                     className="bg-white/50 border border-white/60 rounded-xl px-3 py-2 text-sm text-on-surface outline-none w-full sm:w-auto cursor-pointer"
+                   >
+                     <option value="newest">Newest First</option>
+                     <option value="oldest">Oldest First</option>
+                     <option value="mostLiked">Most Liked</option>
+                   </select>
                  </div>
-                <button className="bg-white/50 border border-white/60 text-on-surface rounded-full w-12 h-12 flex items-center justify-center shadow-sm hover:bg-white/70 transition-colors scale-95 active:scale-90">
-                  <span className="material-symbols-outlined">arrow_forward</span>
-                </button>
               </div>
             </div>
           </div>

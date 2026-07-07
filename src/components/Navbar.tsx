@@ -55,9 +55,9 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         {!loading && user ? (
           <div className="flex items-center gap-4">
-            <span className="text-on-surface-variant text-sm font-medium hidden sm:inline-block">
+            <Link href="/profile" className="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium hidden sm:inline-block">
               Hi, {user.displayName || "Author"}
-            </span>
+            </Link>
             <button
               onClick={logout}
               className="bg-white/40 text-on-surface border border-white/60 shadow-sm backdrop-blur-md font-body-md text-sm font-medium px-4 py-2 rounded-full hover:bg-white/60 transition-colors duration-300 scale-95 active:scale-90"

@@ -62,6 +62,7 @@ export default function SubmitPoem() {
         audioUrl: audioUrl || undefined,
         createdAt,
         reactions: {},
+        userReactions: {},
         comments: [],
       });
 
